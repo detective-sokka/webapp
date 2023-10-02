@@ -36,3 +36,5 @@ jobs:
           sudo systemctl start mysql.service
           ps aux | grep mysql
 
+      - name: Test healtz api
+        run: curl -vvvv http://localhost:8080/healthz
