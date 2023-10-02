@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build-setup:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -37,10 +37,14 @@ jobs:
           echo Add other actions to build,
           echo test, and deploy your project.
 
-      - name: Install and setup mysql server
+      - name: Run apt update
+        run: sudo apt update          
+      
+      - name: install mysql-server       
+        run: sudo apt install mysql-server
+      
+      - name: Setup mysql server
         run: |
-          sudo apt update
-          sudo apt install mysql-server
           sudo systemctl start mysql.service
           mysql -v
           
