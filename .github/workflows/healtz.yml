@@ -35,6 +35,9 @@ jobs:
         run: |
           sudo systemctl start mysql.service
           ps aux | grep mysql
+      
+      - name: Install dependecies
+        run: npm i             
 
-      - name: Test healtz api
-        run: curl -vvvv http://localhost:8080/healthz
+      - name: Run Tests (testing Healthz API endpoint)  
+        run: npm test

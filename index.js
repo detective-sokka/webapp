@@ -10,6 +10,7 @@ var app = express();
 app.use(cors({ origin: "*" }));
 
 app.get("/healthz", (req, res) => {
+  
   if (req.body) {
     res.sendStatus(400);
   }
@@ -46,3 +47,5 @@ app.get("/healthz", (req, res) => {
 app.listen(PORT, () => {
   console.log("Server is running on port ", PORT);
 });
+
+export default app;
