@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import Assignment from "./Assignment.js";
 import sequelize from "../configs/sequelize.js";
+import bcrypt from "bcrypt";
 
 export const Account = sequelize.define("Account", {
   
@@ -8,7 +9,7 @@ export const Account = sequelize.define("Account", {
     type: DataTypes.UUID,
     primaryKey: true,
     defaultValue: DataTypes.UUIDV4,
-    allowNull: false,
+    allowNull: false,    
     readOnly: true,
   },
   first_name: {
@@ -25,12 +26,17 @@ export const Account = sequelize.define("Account", {
   },
   email: {
     type: DataTypes.STRING,
+    unique: true,
     allowNull: false,
   },
 
 }, {
   tableName: "Account"
 });
+
+Account.prototype.validPassword = async function(password) {
+  return await bcrypt.compare(password, this.password);
+}
 
 Account.hasMany(Assignment, {foreignKey: 'userId'});
 

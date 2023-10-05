@@ -34,9 +34,12 @@ export const init_user_data = async (filename) => {
         .then((data) => {          
           account_data.password = data;
           // TODO : Implement findOne
-          Account.create(account_data)
-            .then((createdAccount) => {
-              console.log("Account created:", createdAccount.toJSON());
+          Account.findOrCreate({where: {email: account_data.email}, 
+            defaults: 
+              account_data
+            })
+            .then(() => {
+              console.log("Account created");
             })
             .catch((error) => {
               console.error("Error creating Account:", error);

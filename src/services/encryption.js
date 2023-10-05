@@ -11,3 +11,9 @@ export async function encryptPassword(password) {
     })
     .catch((err) => console.error(err.message));
 }
+
+
+export async function decodeBase64(encodedString){
+  
+  return Buffer.from(encodedString.split(' ')[1], 'base64').toString();
+}
