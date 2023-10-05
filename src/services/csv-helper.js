@@ -33,7 +33,7 @@ export const init_user_data = async (filename) => {
       encryptPassword(row[3])
         .then((data) => {          
           account_data.password = data;
-          // TODO : Implement findOne
+          
           Account.findOrCreate({where: {email: account_data.email}, 
             defaults: 
               account_data
