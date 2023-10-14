@@ -28,7 +28,19 @@ router.get("/v1/assignments", (req, res) => {
 
       await Assignment.findAll()
         .then((assignments) => {
-          res.json(assignments).status(200);
+
+          const updatedAssignemts = assignments.map((model) => ({
+            id: model.id,
+            assignment_created: model.createdAt,
+            assignment_updated: model.updatedAt,    
+            model_name: model.name,
+            model_points: model.points,
+            num_of_attempts: model.num_of_attempts,
+            deadline: model.deadline,
+            userId: model.userId,            
+          }))
+
+          res.json(updatedAssignemts).status(200);
           return;
         })
         .catch(() => {
@@ -94,7 +106,19 @@ router.post("/v1/assignments", jsonParser, (req, res) => {
 
         Assignment.create(assignment)
           .then((data) => {
-            res.json(data).status(201);
+
+            const updatedAssignemts = {
+              id: data.id,
+              assignment_created: data.createdAt,
+              assignment_updated: data.updatedAt,    
+              model_name: data.name,
+              model_points: data.points,
+              num_of_attempts: data.num_of_attempts,
+              deadline: data.deadline,
+              userId: data.userId,            
+            }
+  
+            res.json(updatedAssignemts).status(201);
           })
           .catch((err) => {
             console.log(err);
@@ -148,7 +172,19 @@ router.get("/v1/assignments/:id", async (req, res) => {
     if (!assignment) {
       res.status(404).json();
     } else {
-      res.json(assignment).status(200);
+      
+      const updatedAssignemts = {
+        id: assignment.id,
+        assignment_created: assignment.createdAt,
+        assignment_updated: assignment.updatedAt,    
+        model_name: assignment.name,
+        model_points: assignment.points,
+        num_of_attempts: assignment.num_of_attempts,
+        deadline: assignment.deadline,
+        userId: assignment.userId,            
+      };
+
+      res.json(updatedAssignemts).status(200);
     }
 
   }).catch((err) => {
@@ -193,7 +229,7 @@ router.delete("/v1/assignments/:id", async (req, res) => {
 
       if (assignment) {
         assignment.destroy();
-
+        
         res.status(204).json();
         return;
       } else {

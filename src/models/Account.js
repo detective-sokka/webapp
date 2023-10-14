@@ -29,6 +29,16 @@ export const Account = sequelize.define("Account", {
     unique: true,
     allowNull: false,
   },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'account_created'
+  }, 
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'account_updated'
+  }
 
 }, {
   tableName: "Account"

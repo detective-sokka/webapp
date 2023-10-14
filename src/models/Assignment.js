@@ -37,6 +37,16 @@ const Assignment = sequelize.define("assignment", {
   userId: {
     type: DataTypes.UUID,
     allowNull: false,
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'assignment_created'
+  }, 
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'assignment_updated'
   }
 }, {
   tableName: "Assignment"
