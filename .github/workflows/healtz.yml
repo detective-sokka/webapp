@@ -42,3 +42,11 @@ jobs:
 
       - name: Run Tests (testing Healthz API endpoint)  
         run: npm test
+      
+      - name: Init packer
+        run: packer init .
+      
+      - name: Validate packer
+        run: |
+          packer fmt .
+          packer validate .
