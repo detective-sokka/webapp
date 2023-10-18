@@ -29,12 +29,17 @@ variable "subnet_id" {
 
 variable "aws_access_key" {
   type = string
-  default = "AKIAQJXEJFWHHBOG47CH"//env("AWS_DEV_ACCESS_KEY")
+  default = env("AWS_DEV_ACCESS_KEY")
 }
 
 variable "aws_secret_key" {
   type = string
-  default = "9udcGV9yUZzO38FUd2bAMQMCm10wr/TPiQbdW5fu"//env("AWS_DEV_SECRET_KEY")
+  default = env("AWS_DEV_SECRET_KEY")
+}
+
+variable "demo_account" {
+  type= string
+  default = "987654320394"
 }
 
 # https://www.packer.io/plugins/builders/amazon/ebs
@@ -43,6 +48,7 @@ source "amazon-ebs" "my-ami" {
   region          = "${var.aws_region}"
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225"
+  ami_users = [ "${var.demo_account}" ]
   access_key =  "${var.aws_access_key}"
   secret_key =  "${var.aws_secret_key}"
 
@@ -80,8 +86,7 @@ build {
       "sudo apt-get update",
       "sudo apt-get upgrade -y",
       "sudo apt-get clean",
-      "sudo apt install mariadb-server -y",
-      #"sudo mysql_secure_installation",
+      "sudo apt install mariadb-server -y",      
       "sudo systemctl status mariadb",
       "sudo apt install nodejs npm -y",
       "nodejs --version && npm --version"
