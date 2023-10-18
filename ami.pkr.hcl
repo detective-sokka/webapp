@@ -73,4 +73,11 @@ build {
       "nodejs --version && npm --version"
     ]
   }
+
+  provisioner "file" {
+
+    source = "project.tar.gz"
+    destination = "/opt/project.tar.gz"
+  }
+
 }
