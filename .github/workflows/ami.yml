@@ -23,7 +23,6 @@ jobs:
           tar --exclude=project.tar.gz -czvf project.tar.gz .
 
       - name: Running the packer script 
-        if: steps.if_merged.outcome == 'success'          
         run: packer build ami.pkr.hcl
 
   
