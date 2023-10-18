@@ -24,7 +24,17 @@ variable "ssh_username" {
 
 variable "subnet_id" {
   type    = string
-  default = "subnet-033ef065d3e511bb6"
+  default = env("AWS_SUBNET")
+}
+
+variable "aws_access_key" {
+  type = string
+  default = "AKIAQJXEJFWHHBOG47CH"//env("AWS_DEV_ACCESS_KEY")
+}
+
+variable "aws_secret_key" {
+  type = string
+  default = "9udcGV9yUZzO38FUd2bAMQMCm10wr/TPiQbdW5fu"//env("AWS_DEV_SECRET_KEY")
 }
 
 # https://www.packer.io/plugins/builders/amazon/ebs
@@ -33,6 +43,9 @@ source "amazon-ebs" "my-ami" {
   region          = "${var.aws_region}"
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225"
+  access_key =  "${var.aws_access_key}"
+  secret_key =  "${var.aws_secret_key}"
+
   ami_regions = [
     "us-east-1",
   ]
@@ -78,7 +91,6 @@ build {
   provisioner "file" {
 
     source = "project.tar.gz"
-    destination = "/opt/project.tar.gz"
+    destination = "/tmp/project.tar.gz"
   }
-
 }
