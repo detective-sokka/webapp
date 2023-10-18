@@ -29,7 +29,10 @@ jobs:
           aws-region: ${{ secrets.AWS_DEV_REGION }}
 
       - name: Run apt update
-        run: sudo apt update          
+        run: sudo apt update   
+        
+      - name: Install node modules
+        run: npm i       
       
       - name: Create build artifact
         run: |
