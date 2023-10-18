@@ -24,11 +24,12 @@ variable "ssh_username" {
 
 variable "subnet_id" {
   type    = string
-  default = "subnet-03f578321daafa331"
+  default = "subnet-033ef065d3e511bb6"
 }
 
 # https://www.packer.io/plugins/builders/amazon/ebs
 source "amazon-ebs" "my-ami" {
+  
   region          = "${var.aws_region}"
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225"
