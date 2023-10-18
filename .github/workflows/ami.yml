@@ -14,6 +14,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - name: Run apt update
+        run: sudo apt update          
+      
+      - name: Create build artifact
+        run: |
+          touch project.tar.gz
+          tar --exclude=project.tar.gz -czvf project.tar.gz .
+
       - name: Running the packer script 
         if: steps.build.outcome == 'success'          
         run: packer build ami.pkr.hcl
