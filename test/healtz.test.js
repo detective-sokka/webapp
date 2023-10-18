@@ -6,17 +6,9 @@ var expect = chai.expect;
 chai.use(chaiHttp);
 
 describe('/GET healthz', () => {
-    it('it should check healthz endpoint', (done) => {
-      chai.request(server)
-          .get('/healthz')
-          .then((res) => {            
-            expect(res).should.have.status(200);                
-            done();
-          }).catch((err) => {
-            expect(err).to.be.null;
-            done();
-          });
-          done();
-    });
-    
+  it('it should check healthz endpoint', async () => {
+    const res = await chai.request(server).get('/healthz'); 
+    expect(res.status).to.equal(200);
+  });
 });
+

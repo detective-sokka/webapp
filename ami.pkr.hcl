@@ -22,11 +22,6 @@ variable "ssh_username" {
   default = "admin"
 }
 
-variable "subnet_id" {
-  type    = string
-  default = env("AWS_SUBNET")
-}
-
 variable "aws_access_key" {
   type = string
   default = env("AWS_DEV_ACCESS_KEY")
@@ -51,7 +46,9 @@ source "amazon-ebs" "my-ami" {
   ami_users = [ "${var.demo_account}" ]
   access_key =  "${var.aws_access_key}"
   secret_key =  "${var.aws_secret_key}"
-
+  tags = {
+    "Usage" : "Assignment5"
+  }
   ami_regions = [
     "us-east-1",
   ]
@@ -64,7 +61,6 @@ source "amazon-ebs" "my-ami" {
   instance_type = "t2.micro"
   source_ami    = "${var.source_ami}"
   ssh_username  = "${var.ssh_username}"
-  subnet_id     = "${var.subnet_id}"
 
   launch_block_device_mappings {
     delete_on_termination = true
