@@ -21,6 +21,9 @@ jobs:
         run: |
           touch project.tar.gz
           tar --exclude=project.tar.gz -czvf project.tar.gz .
+      
+      - name: Init packer
+        run: packer init .
 
       - name: Running the packer script 
         run: packer build ami.pkr.hcl
