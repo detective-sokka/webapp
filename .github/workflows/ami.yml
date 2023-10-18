@@ -13,9 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Build the application artifact
-        run: tar -czvf project.tar.gz .
       
       - name: Running the packer script 
         if: steps.build.outcome == 'success'          
