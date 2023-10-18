@@ -80,13 +80,7 @@ build {
     ]
     inline = [
       "sudo apt-get update",
-      "sudo apt-get upgrade -y",
-      # Installing SSH key
-      "sudo mkdir -p ~/.ssh",
-      "sudo chmod 700 ~/.ssh",
-      "sudo cp EC2.pub ~/.ssh/authorized_keys",
-      "sudo chmod 600 ~/.ssh/authorized_keys",
-      "sudo chown -R terraform ~/.ssh",
+      "sudo apt-get upgrade -y",      
       "sudo apt-get clean",
       "sudo apt install mariadb-server -y",      
       "sudo systemctl status mariadb",
@@ -99,5 +93,11 @@ build {
 
     source = "project.tar.gz"
     destination = "/tmp/project.tar.gz"
+  }
+
+  provisioner "file" {
+
+    source = "EC2.pub"
+    destination = "~/.ssh/EC2.pub"
   }
 }
