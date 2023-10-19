@@ -28,17 +28,16 @@ router.get("/v1/assignments", (req, res) => {
 
       await Assignment.findAll()
         .then((assignments) => {
-
           const updatedAssignemts = assignments.map((model) => ({
             id: model.id,
             assignment_created: model.createdAt,
-            assignment_updated: model.updatedAt,    
+            assignment_updated: model.updatedAt,
             model_name: model.name,
             model_points: model.points,
             num_of_attempts: model.num_of_attempts,
             deadline: model.deadline,
-            userId: model.userId,            
-          }))
+            userId: model.userId,
+          }));
 
           res.json(updatedAssignemts).status(200);
           return;
@@ -56,36 +55,30 @@ router.get("/v1/assignments", (req, res) => {
 
 // POST /v1/assignments - Create Assignment
 router.post("/v1/assignments", jsonParser, (req, res) => {
-
-  if(!req.get("Authorization")) {
-
-    res.status(401).json();    
+  if (!req.get("Authorization")) {
+    res.status(401).json();
     return;
   }
 
   decodeBase64(req.get("Authorization"))
     .then(async (decodeString) => {
-
       const assignment = req.body;
       var user = null;
-      
+
       user = {
         email: decodeString.split(":")[0],
         password: decodeString.split(":")[1],
       };
 
       const account = await Account.findOne({
-
         where: { email: user.email },
-      
       }).catch((err) => {
-
         console.log(err);
         res.status(400).json();
+        return;
       });
 
       if (!account || !(await account.validPassword(user.password))) {
-
         res.status(401).json(); // Unauthorized
         return;
       }
@@ -95,35 +88,36 @@ router.post("/v1/assignments", jsonParser, (req, res) => {
       const searchAssignment = await Assignment.findOne({
         where: { name: assignment.name },
       }).catch((err) => {
+        console.log("1", err);
         res.status(400).json();
+        return;
       });
 
       if (searchAssignment) {
-
         res.status(400).json();
-
+        return;
       } else {
+        try {
+          const data = await Assignment.create(assignment);
+          const updatedAssignemts = {
+            id: data.id,
+            assignment_created: data.createdAt,
+            assignment_updated: data.updatedAt,
+            model_name: data.name,
+            model_points: data.points,
+            num_of_attempts: data.num_of_attempts,
+            deadline: data.deadline,
+            userId: data.userId,
+          };
 
-        Assignment.create(assignment)
-          .then((data) => {
-
-            const updatedAssignemts = {
-              id: data.id,
-              assignment_created: data.createdAt,
-              assignment_updated: data.updatedAt,    
-              model_name: data.name,
-              model_points: data.points,
-              num_of_attempts: data.num_of_attempts,
-              deadline: data.deadline,
-              userId: data.userId,            
-            }
-  
-            res.json(updatedAssignemts).status(201);
-          })
-          .catch((err) => {
-            console.log(err);
-            res.json().status(400);
-          });
+          res.statusCode = 201;
+          res.statusMessage = "Assignment Created";
+          res.end(updatedAssignemts);
+        } catch (error) {
+          console.log(err);
+          res.json().status(400);
+          return;
+        }
       }
     })
     .catch((err) => {
@@ -133,133 +127,133 @@ router.post("/v1/assignments", jsonParser, (req, res) => {
 });
 
 router.get("/v1/assignments/:id", async (req, res) => {
-
-  if(!req.get("Authorization")) {
-
-    res.status(401).json();    
-    return;
-  }
-
-  decodeBase64(req.get("Authorization")).then(async (decodeString) => {
-    
-    var user = null;
-
-    user = {
-      email: decodeString.split(":")[0],
-      password: decodeString.split(":")[1],      
-    };
-
-    const account = await Account.findOne({ where: { email: user.email } }).catch((err) => {
-      
-      console.log(err);
-      res.send(401).json();
-      return;
-    });
-
-    if (!account || !(await account.validPassword(user.password))) {
-
-      res.status(401).json(); 
-      return;
-    }
-
-    const assignmentId = req.params.id;
-    const assignment = await Assignment.findOne({
-      where: { id: assignmentId },
-    });
-
-    console.log("/v1/assignments:id get called");
-
-    if (!assignment) {
-      res.status(404).json();
-    } else {
-      
-      const updatedAssignemts = {
-        id: assignment.id,
-        assignment_created: assignment.createdAt,
-        assignment_updated: assignment.updatedAt,    
-        model_name: assignment.name,
-        model_points: assignment.points,
-        num_of_attempts: assignment.num_of_attempts,
-        deadline: assignment.deadline,
-        userId: assignment.userId,            
-      };
-
-      res.json(updatedAssignemts).status(200);
-    }
-
-  }).catch((err) => {
-    
-    console.log(err);
-    res.status(403).json();
-  });
-});
-
-router.delete("/v1/assignments/:id", async (req, res) => {
-  
   if (!req.get("Authorization")) {
-    res.status(401).json();
-    return;
-  }
-
-  decodeBase64(req.get("Authorization")).then(async (decodeString) => {
-    var user = null;
-
-    user = {
-      email: decodeString.split(":")[0],
-      password: decodeString.split(":")[1],
-    };
-
-    const account = await Account.findOne({
-      where: { email: user.email },
-    }).catch((err) => {
-      console.log(err);
-      res.send(401).json();
-      return;
-    });
-
-    if (!account || !(await account.validPassword(user.password))) {
-      res.status(401).json();
-      return;
-    }
-
-    try {
-      const assignment = await Assignment.findOne({
-        where: { id: req.params.id },
-      });
-
-      if (assignment) {
-        assignment.destroy();
-        
-        res.status(204).json();
-        return;
-      } else {
-        res.status(404).json();
-        return;
-      }
-    } catch (error) {
-      res.status(404).json();
-      return;
-    }
-  }).catch((err) => {
-
-    console.log(err);
-    res.status(401).json();
-  });
-});
-
-router.put("/v1/assignments/:id", jsonParser, async (req, res) => {
-  
-  const assignmentId = req.params.id;
-
-  if (!req.get("Authorization")) {
-
     res.status(401).json();
     return;
   }
 
   decodeBase64(req.get("Authorization"))
     .then(async (decodeString) => {
+      var user = null;
 
+      user = {
+        email: decodeString.split(":")[0],
+        password: decodeString.split(":")[1],
+      };
+
+      const account = await Account.findOne({
+        where: { email: user.email },
+      }).catch((err) => {
+        console.log(err);
+        res.send(401).json();
+        return;
+      });
+
+      if (!account || !(await account.validPassword(user.password))) {
+        res.status(401).json();
+        return;
+      }
+
+      const assignmentId = req.params.id;
+      const assignment = await Assignment.findOne({
+        where: { id: assignmentId },
+      });
+
+      console.log("/v1/assignments:id get called");
+
+      if (!assignment) {
+        res.status(404).json();
+        return;
+      } else {
+        const updatedAssignemts = {
+          id: assignment.id,
+          assignment_created: assignment.createdAt,
+          assignment_updated: assignment.updatedAt,
+          model_name: assignment.name,
+          model_points: assignment.points,
+          num_of_attempts: assignment.num_of_attempts,
+          deadline: assignment.deadline,
+          userId: assignment.userId,
+        };
+
+        res.json(updatedAssignemts).status(200);
+        return;
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(403).json();
+    });
+});
+
+router.delete("/v1/assignments/:id", async (req, res) => {
+  if (!req.get("Authorization")) {
+    res.status(401).json();
+    return;
+  }
+
+  decodeBase64(req.get("Authorization"))
+    .then(async (decodeString) => {
+      var user = null;
+
+      user = {
+        email: decodeString.split(":")[0],
+        password: decodeString.split(":")[1],
+      };
+
+      const account = await Account.findOne({
+        where: { email: user.email },
+      }).catch((err) => {
+        console.log(err);
+        res.send(401).json();
+        return;
+      });
+
+      if (!account || !(await account.validPassword(user.password))) {
+        res.status(401).json();
+        return;
+      }
+
+      try {
+        const assignment = await Assignment.findOne({
+          where: { id: req.params.id },
+        });
+
+        if (assignment.userId !== account.id) {
+          res.status(401).json();
+          return;
+        }
+
+        if (assignment) {
+          assignment.destroy();
+
+          res.status(204).json();
+          return;
+        } else {
+          res.status(404).json();
+          return;
+        }
+      } catch (error) {
+        res.status(404).json();
+        return;
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(401).json();
+    });
+});
+
+router.put("/v1/assignments/:id", jsonParser, async (req, res) => {
+  const assignmentId = req.params.id;
+
+  if (!req.get("Authorization")) {
+    res.status(401).json();
+    return;
+  }
+
+  decodeBase64(req.get("Authorization"))
+    .then(async (decodeString) => {
       var user = null;
 
       user = {
@@ -272,13 +266,11 @@ router.put("/v1/assignments/:id", jsonParser, async (req, res) => {
       });
 
       if (!account || !(await account.validPassword(user.password))) {
-
         res.status(401).json();
         return;
       }
 
       if (JSON.stringify(req.body) === "{}") {
-
         throw new Error("Empty body");
       }
 
@@ -287,30 +279,35 @@ router.put("/v1/assignments/:id", jsonParser, async (req, res) => {
       });
 
       if (account.id !== assignment.userId) {
-
         res.status(401).json();
         return;
       }
 
-      const result = await Assignment.update(req.body, {
+      try {
+        const result = await Assignment.update(req.body, {
+          where: { id: assignmentId },
+        });
 
-        where: { id: assignmentId },
+        if (result[0] === 1) {
+          // The update was successful
+          res.status(204).json();
+          return;
 
-      });
-      
-      if (result[0] === 1) {
-        // The update was successful
-        res.status(204).json();
+        } else {
+          // No rows were updated (assignmentId might not exist)
+          res.json().status(400);
+          return;
+        }
 
-      } else {
-        // No rows were updated (assignmentId might not exist)
-        throw new Error("assignment doesn't exist");
+      } catch (error) {
+        res.json().status(400);
+        return;
       }
+      
     })
     .catch(() => {
-
       res.json().status(400);
-    });
+    });    
 });
 
 // ************* Default healthz apis *************

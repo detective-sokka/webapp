@@ -20,4 +20,4 @@ n
 n
 n
 EOF
-sudo mysql -u root -proot -e  CREATE DATABASE IF NOT EXISTS saiDB;  
+sudo mysql -u root -proot -e  'CREATE DATABASE IF NOT EXISTS saiDB;  '
