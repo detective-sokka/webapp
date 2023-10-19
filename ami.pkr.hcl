@@ -46,7 +46,7 @@ variable "demo_account" {
 source "amazon-ebs" "my-ami" {
   
   region          = "${var.aws_region}"
-  ami_name        = "${var.ami_name}"
+  ami_name        = "${var.ami_name}_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225"
   ami_users = [ "${var.demo_account}" ]
   access_key =  "${var.aws_access_key}"
@@ -83,6 +83,12 @@ build {
     source = "project.tar.gz"
     destination = "/home/admin/project.tar.gz"
   }
+
+    provisioner "file" {
+
+      source = "project.tar.gz"
+      destination = "/home/admin/project.tar.gz"
+    }
 
   provisioner "shell" {
     environment_vars = [

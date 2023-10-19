@@ -4,12 +4,12 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   pull_request:
     branches: [ "main" ]
-    #types: 
-    #  - closed
+    types: 
+      - closed
 
 jobs:
   if_merged:
-    #if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -40,8 +40,7 @@ jobs:
           tar --exclude=project.tar.gz -czvf project.tar.gz .      
       
       - name: Generate pub file from secrets
-        run: |
-          echo ${{secrets.EC2_DEMO_PUBLIC_KEY}} > EC2.pub
+        run: echo ${{secrets.EC2_DEMO_PUBLIC_KEY}} > EC2.pub
 
       - name: Init packer
         run: packer init .
