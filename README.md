@@ -14,3 +14,7 @@
 2. Run `scp -i [identity-file] webapp.tar.gz [username]@[server-ip]`
 3. Connect to server using `ssh` command
 4. Follow the steps mentioned above to run, make sure the .env file is configured properly
+
+## Packer instructions
+1. Run `packer init .`
+2. Run `packer build ami.pkr.hcl`
