@@ -83,14 +83,8 @@ build {
       "DEBIAN_FRONTEND=noninteractive",
       "CHECKPOINT_DISABLE=1"
     ]
-    inline = [
-      "sudo apt-get update",
-      "sudo apt-get upgrade -y",      
-      "sudo apt-get clean",
-      "sudo apt install mariadb-server -y",      
-      "sudo systemctl status mariadb",
-      "sudo apt install nodejs npm -y",
-      "nodejs --version && npm --version",      
+    scripts = [
+      "instance_setup.sh"
     ]
   }
 
