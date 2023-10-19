@@ -12,6 +12,11 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
+variable "ami_name" {
+  type = string
+  default = "Assignment5"
+}
+
 variable "source_ami" {
   type    = string
   default = "ami-06db4d78cb1d3bbf9" # Debian 12
@@ -41,7 +46,7 @@ variable "demo_account" {
 source "amazon-ebs" "my-ami" {
   
   region          = "${var.aws_region}"
-  ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
+  ami_name        = "${var.ami_name}"
   ami_description = "AMI for CSYE 6225"
   ami_users = [ "${var.demo_account}" ]
   access_key =  "${var.aws_access_key}"
@@ -92,12 +97,6 @@ build {
   provisioner "file" {
 
     source = "project.tar.gz"
-    destination = "/tmp/project.tar.gz"
-  }
-
-  provisioner "file" {
-
-    source = "EC2.pub"
-    destination = "~/.ssh/EC2.pub"
+    destination = "/home/admin/project.tar.gz"
   }
 }
