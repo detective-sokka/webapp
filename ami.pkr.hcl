@@ -76,7 +76,13 @@ source "amazon-ebs" "my-ami" {
 }
 
 build {
-  sources = ["source.amazon-ebs.my-ami"]
+  sources = ["source.amazon-ebs.my-ami"]  
+
+  provisioner "file" {
+
+    source = "project.tar.gz"
+    destination = "/home/admin/project.tar.gz"
+  }
 
   provisioner "shell" {
     environment_vars = [
@@ -86,11 +92,5 @@ build {
     scripts = [
       "instance_setup.sh"
     ]
-  }
-
-  provisioner "file" {
-
-    source = "project.tar.gz"
-    destination = "/home/admin/project.tar.gz"
   }
 }

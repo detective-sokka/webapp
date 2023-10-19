@@ -7,9 +7,8 @@ sudo apt install mariadb-server -y
 sudo systemctl status mariadb  
 sudo apt install nodejs npm -y  
 nodejs --version && npm --version       
-rm -r /usr/bin/git
+sudo rm -r /usr/bin/git
 sudo tar -xzvf project.tar.gz -C .
-sudo rm -r node_modules
 sudo npm i
 sudo mysql_secure_installation << EOF 
 root
