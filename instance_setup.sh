@@ -1,21 +1,13 @@
-#!/bin/bash
-sudo apt-get update 
-sudo apt-get upgrade -y        
-sudo apt-get clean 
-sudo apt install mariadb-server -y        
-sudo systemctl status mariadb  
+#!/bin/bash       
+sudo apt-get update
+sudo apt install mariadb-server -y
 sudo apt install nodejs npm -y  
-nodejs --version && npm --version       
-sudo rm -r /usr/bin/git
-sudo tar -xzvf project.tar.gz -C .
+sudo apt-get install unzip
+unzip project.zip -d .
+sudo rm -r node_modules
+sudo rm project.zip
 sudo npm i
-sudo mysql_secure_installation << EOF 
-root
-n
-n
-n
-n
-n
-n
-EOF
-sudo mysql -u root -proot -e  'CREATE DATABASE IF NOT EXISTS saiDB;  '
+sudo mysql -u root -proot -e 'CREATE DATABASE IF NOT EXISTS saiDB;'
+sudo mysql -u root -proot -e "CREATE USER 'sai'@'localhost' IDENTIFIED BY 'sai'";
+sudo mysql -u root -proot -e "GRANT ALL PRIVILEGES ON saiDB.* TO 'sai'@'localhost'";
+sudo npm test

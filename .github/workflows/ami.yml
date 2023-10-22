@@ -34,10 +34,11 @@ jobs:
       - name: Install node modules
         run: npm i       
       
+      - name: Install zip module
+        run: sudo apt-get install zip 
+
       - name: Create build artifact
-        run: |
-          touch project.tar.gz
-          tar --exclude=project.tar.gz -czvf project.tar.gz .      
+        run: zip -r project.zip .            
       
       - name: Generate pub file from secrets
         run: echo ${{secrets.EC2_DEMO_PUBLIC_KEY}} > EC2.pub
