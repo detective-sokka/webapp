@@ -78,6 +78,4 @@ build {
       "instance_setup.sh"
     ]
   }
-
-  
 }
