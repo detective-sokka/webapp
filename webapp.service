@@ -1,0 +1,15 @@
+[Unit]
+Description='Webapp used to store and retrieve assignments of students '
+After=cloud-final.service
+
+[Service]
+Type=simple
+User=csye6225
+Group=csye6225
+WorkingDirectory=/opt/csye6225/webapp
+ExecStart=/usr/bin/node /opt/csye6225/index.js
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=cloud-init.target

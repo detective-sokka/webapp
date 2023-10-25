@@ -31,9 +31,6 @@ jobs:
 
       - name: Create build artifact
         run: zip -r project.zip .            
-      
-      - name: Generate pub file from secrets
-        run: echo ${{secrets.EC2_DEMO_PUBLIC_KEY}} > EC2.pub
 
       - name: Init packer
         run: packer init .

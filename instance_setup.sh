@@ -1,13 +1,23 @@
-#!/bin/bash       
+#!/bin/bash     
+sudo groupadd csye6225
+sudo useradd -s /bin/false -g csye6225 -d /opt/csye6225 -m csye6225
+
+sudo cp /home/admin/project.zip /opt/csye6225/project.zip
+
+cd '/opt/csye6225' || exit
 sudo apt-get update
-sudo apt install mariadb-server -y
 sudo apt install nodejs npm -y  
 sudo apt-get install unzip
-unzip project.zip -d .
-sudo rm -r node_modules
+sudo unzip project.zip -d .
 sudo rm project.zip
+sudo rm -r node_modules
 sudo npm i
-sudo mysql -u root -proot -e 'CREATE DATABASE IF NOT EXISTS saiDB;'
-sudo mysql -u root -proot -e "CREATE USER 'sai'@'localhost' IDENTIFIED BY 'sai'";
-sudo mysql -u root -proot -e "GRANT ALL PRIVILEGES ON saiDB.* TO 'sai'@'localhost'";
-sudo npm test
+sudo chown -R csye6225:csye6225 .
+sudo chown -R 755 .
+
+sudo cp '/home/admin/webapp.service' '/lib/systemd/system/csye6225.service'
+sudo systemctl daemon-reload
+sudo systemctl enable csye6225
+sudo systemctl start csye6225
+sudo systemctl restart csye6225
+sudo systemctl stop csye6225
