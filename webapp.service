@@ -2,17 +2,17 @@
 Description='Webapp used to store and retrieve assignments of students '
 After=cloud-final.service
 
+
 [Service]
 Type=simple
 User=csye6225
 Group=csye6225
-WorkingDirectory=/opt/csye6225
-ExecStart=/usr/bin/node /opt/csye6225/index.js
+EnvironmentFile=/home/csye6225/webapp/.env
+WorkingDirectory=/home/csye6225/webapp
+ExecStart=/usr/bin/npm run start
 Restart=always
-RestartSec=3
+RestartSec=30
+
 
 [Install]
 WantedBy=cloud-init.target
-WantedBy=multi-user.target
-
-

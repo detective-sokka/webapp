@@ -1,0 +1,5 @@
+DB_USERNAME = "csye6225"
+DB_PASSWORD = "A5tr0ngPa55w0rd"
+DB_DIALECT  = "mysql"
+DB_NAME     = "saiDB"
+DB_IPADDRESS = "csye6225.cwnm6khx0e6m.us-east-1.rds.amazonaws.com"

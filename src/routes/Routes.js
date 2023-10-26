@@ -81,6 +81,12 @@ router.post("/v1/assignments", jsonParser, async (req, res) => {
 
     assignment.userId = account.id;
 
+    if ( parseInt(assignment.num_of_attempts) < 1 || parseInt(assignment.num_of_attempts) > 100 || parseInt(assignment.points) < 1 || parseInt(assignment.points) > 100) {
+      
+      res.status(400).json();
+      return;
+    }
+
     const data = await Assignment.create(assignment);
     const updatedAssignemts = {
       id: data.id,
@@ -96,7 +102,9 @@ router.post("/v1/assignments", jsonParser, async (req, res) => {
     res.statusMessage = "Assignment Created";
     res.json(updatedAssignemts);
     return;
+
   } catch (error) {
+
     console.log(error);
     res.json().status(400);
   }
