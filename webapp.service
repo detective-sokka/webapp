@@ -1,6 +1,6 @@
 [Unit]
 Description='Webapp used to store and retrieve assignments of students '
-After=cloud-final.service
+After=multi-user.target
 
 
 [Service]

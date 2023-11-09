@@ -76,6 +76,11 @@ build {
     destination  = "/home/admin/webapp.service"
   }
 
+  provisioner "file" {
+    source = "cloudwatch-config.json"
+    destination = "/home/admin/cloudwatch-config.json"
+  }
+
   provisioner "shell" {
     environment_vars = [
       "DEBIAN_FRONTEND=noninteractive",
