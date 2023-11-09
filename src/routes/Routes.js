@@ -31,6 +31,15 @@ router.get("/v1/assignments", (req, res) => {
 
   client.increment('GET_ALL');
 
+  sequelize
+    .authenticate()
+    .catch((error) => {
+      
+      logger.error("503 error");
+      res.status(503).json();
+      return;
+    });
+  
   decodeBase64(req.get("Authorization"))
     .then(async (decodeString) => {
 
@@ -84,6 +93,16 @@ router.get("/v1/assignments", (req, res) => {
 router.post("/v1/assignments", jsonParser, async (req, res) => {
 
   client.increment('POST_REQ');
+  
+  sequelize
+    .authenticate()
+    .catch((error) => {
+      
+      logger.error("503 error");
+      res.status(503).json();
+      return;
+    });
+  
   if (!req.get("Authorization")) {
 
     logger.error("401 error");
@@ -148,6 +167,16 @@ router.post("/v1/assignments", jsonParser, async (req, res) => {
 router.get("/v1/assignments/:id", async (req, res) => {
   
   client.increment('GET_ID');
+
+  sequelize
+    .authenticate()
+    .catch((error) => {
+      
+      logger.error("503 error");
+      res.status(503).json();
+      return;
+    });
+  
 
   if (!req.get("Authorization")) {
     
@@ -220,6 +249,15 @@ router.delete("/v1/assignments/:id", async (req, res) => {
   
   client.increment('DELETE_ID');
 
+  sequelize
+    .authenticate()
+    .catch((error) => {
+      
+      logger.error("503 error");
+      res.status(503).json();
+      return;
+    });
+  
   if (!req.get("Authorization")) {
     
     logger.error("401 error");
@@ -291,9 +329,19 @@ router.delete("/v1/assignments/:id", async (req, res) => {
 });
 
 router.put("/v1/assignments/:id", jsonParser, async (req, res) => {
+  
   const assignmentId = req.params.id;
 
   client.increment('PUTID');
+
+  sequelize
+    .authenticate()
+    .catch((error) => {
+      
+      logger.error("503 error");
+      res.status(503).json();
+      return;
+    });
 
   if (!req.get("Authorization")) {
     
