@@ -20,3 +20,4 @@
 2. Run `packer build ami.pkr.hcl`
 
 
+##### Sample
