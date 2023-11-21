@@ -18,6 +18,3 @@
 ## Packer instructions
 1. Run `packer init .`
 2. Run `packer build ami.pkr.hcl`
-
-
-##### Sample
