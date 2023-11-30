@@ -4,9 +4,12 @@ import Assignment from "../models/Assignment.js";
 import bodyParser from "body-parser";
 import { decodeBase64 } from "../services/encryption.js";
 import Account from "../models/Account.js";
+import Submission from "../models/Submission.js";
 import winston from "winston";
 import "winston-cloudwatch";
 import StatsD from 'node-statsd';
+
+import AWS from "aws-sdk";
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
@@ -160,7 +163,7 @@ router.post("/v1/assignments", jsonParser, async (req, res) => {
   } catch (error) {
 
     logger.error("400 error");
-    res.json().status(400);
+    res.status(400).json();
   }
 });
 
@@ -395,20 +398,194 @@ router.put("/v1/assignments/:id", jsonParser, async (req, res) => {
           return;
         } else {
           // No rows were updated (assignmentId might not exist)
-          res.json().status(400);
+          res.status(400).json();
           logger.error("400 error");
           return;
         }
       } catch (error) {
-        res.json().status(400);
+        res.status(400).json();
         logger.error("400 error");
         return;
       }
     })
     .catch(() => {
-      res.json().status(400);
+      res.status(400).json();
       logger.error("400 error");
     });
+});
+
+router.post("/v1/assignments/:id/submission", jsonParser, async (req, res) => {
+
+  const assignmentId = req.params.id;
+
+  client.increment('SUBMISSION_REQ');
+
+  sequelize
+  .authenticate()
+  .catch((error) => {
+    
+    logger.error("503 error");
+    res.status(503).json();
+    return;
+  });
+  
+  if (!req.get("Authorization")) {
+
+    logger.error("401 error");
+    res.status(401).json();
+    return;
+  }  
+
+  console.log("1");
+
+  const decodeString = await decodeBase64(req.get("Authorization")).catch(() => {
+
+    console.log("6");      
+    res.status(400).json();
+    logger.error("400 error");
+  });    
+      
+      console.log("1.*");
+      var user = null;
+
+      user = {
+        email: decodeString.split(":")[0],
+        password: decodeString.split(":")[1],
+      };
+
+      console.log("1.2");
+      
+      const account = await Account.findOne({
+        where: { email: user.email },
+      });
+
+      console.log("1.3"); 
+
+      if (!account || !(await account.validPassword(user.password))) {
+        res.status(403).json();
+        logger.error("403 error");
+        return;
+      }
+
+      console.log("1.4"); 
+
+
+      if (JSON.stringify(req.body) === "{}") {
+        
+        res.status(400).json();
+        logger.error("400 error");
+        return;
+      }
+
+      console.log("1.5");      
+
+      const assignment = await Assignment.findOne({
+        where: { id: assignmentId },
+      });
+
+      if (!assignment) {
+        
+        res.status(404).json();
+        logger.error("404 error");
+        return;
+      }
+
+      if (!assignment.userId) {        
+        res.status(401).json();
+        logger.error("401 error");
+        return;
+      }
+
+      console.log("2");
+
+      try {
+        
+        const { submission_url } = req.body;
+        console.log("req body", req.body);
+
+        if (!submission_url) {
+          return res.status(400).send({ error: 'Submission URL is required' });
+        }
+
+        console.log("3");
+        
+        const currentDate = new Date();
+        const deadlineDate = new Date(assignment.deadline);
+        const submission_limit = assignment.num_of_attempts;
+
+        // Compare the submission date to the assignment date
+        if (deadlineDate < currentDate) {
+
+          console.log("Deadline error");
+          res.status(403).json();
+          logger.error("403 error, Deadline has passed");
+          return;
+        }
+
+        // Count the number of submissions and return error if exceeded limit
+                
+        const submissions = await Submission.findAll({
+          where: { assignment_id: assignmentId },
+        });
+                
+        if (submissions.length >= submission_limit) {
+          
+          res.status(400).json();
+          logger.error("400 error, Max attempts reached");
+          return;
+        }
+
+        // Create a new Submission
+        const newSubmission = await Submission.create({
+
+          assignment_id: assignmentId,
+          submission_url: submission_url,
+        });
+
+        const snsClient = new AWS.SNS({
+          apiVersion: "2010-03-31",
+          region: "us-east-1"
+        });
+  
+        const snsMessage = {
+          url: submission_url,
+          user: {
+            email: user.email            
+          },
+        };
+    
+        //const topicsData = await snsClient.listTopics().promise();
+        //const topicArn = topicsData.Topics.find(topic => topic.TopicArn.includes('saiSNS')).TopicArn;    
+        const snsArn = process.env.SNS_ARN
+    
+        const snsParams = {
+          Message: JSON.stringify(snsMessage),
+          TopicArn: snsArn,
+        };
+        
+        try {
+
+          const snsResponse = await snsClient.publish(snsParams).promise();
+          console.log("Message published to SNS:", snsResponse.MessageId);          
+    
+        } catch (error) {
+
+          console.error("Error publishing message to SNS:", error);          
+        }
+
+        console.log("4");
+      
+        // Return the created Submission with a 201 status code
+        return res.status(201).json(newSubmission);
+
+      } catch (error) {
+
+        console.log("5", error);
+      
+        res.status(400).json();
+        logger.error("400 error");
+        return;
+      }
 });
 
 // ************* Default healthz apis *************
