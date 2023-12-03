@@ -11,7 +11,7 @@ on:
 
 jobs:
   if_merged:
-  #  if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -54,17 +54,6 @@ jobs:
 
       - name: Extract ami id from manifest.json
         run: ami_id=$(cat manifest.json | grep artifact_id | cut -d ":" -f 3 | tr -d '",')
-
-      - name: Configure variables
-        run: |        
-          "my-launch-template"          
-          OLD_VERSION=1
-
-      - name: Display variable names
-        run : |
-          echo $ami_id
-          echo $TEMPLATE_NAME
-          echo $OLD_VERSION
 
       - name: Fetch old launch template data and save it
         run: aws ec2 describe-launch-template-versions --launch-template-name "myLaunchTemplate" --versions 1 
