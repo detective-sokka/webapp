@@ -2,6 +2,8 @@ name: AMI
 
 on:  
   # Triggers the workflow on push or pull request events but only for the "main" branch
+  workflow_dispatch:
+  
   pull_request:
     branches: [ "main" ]
     types: 
@@ -9,7 +11,7 @@ on:
 
 jobs:
   if_merged:
-    if: github.event.pull_request.merged == true
+  #  if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -50,31 +52,34 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_DEMO_SECRET_KEY }}
           export AWS_DEFAULT_REGION="us-east-1"
 
-      - name: Install jq
-        run: sudo apt-get install jq
-      
       - name: Extract ami id from manifest.json
         run: ami_id=$(cat manifest.json | grep artifact_id | cut -d ":" -f 3 | tr -d '",')
 
       - name: Configure variables
         run: |        
-          TEMPLATE_NAME="my-launch-template"          
+          "my-launch-template"          
           OLD_VERSION=1
 
+      - name: Display variable names
+        run : |
+          echo $ami_id
+          echo $TEMPLATE_NAME
+          echo $OLD_VERSION
+
       - name: Fetch old launch template data and save it
-        run: aws ec2 describe-launch-template-versions --launch-template-name $TEMPLATE_NAME --versions $OLD_VERSION > template-data.json   
+        run: aws ec2 describe-launch-template-versions --launch-template-name "myLaunchTemplate" --versions 1 
 
       - name: Create launch template
         run: |
-          new_template_version=$(aws ec2 create-launch-template-version --source-version $OLD_VERSION --launch-template-name $TEMPLATE_NAME --launch-template-data "{\"ImageId\":\"$ami_id\"}" --version-description "v2" --query 'LaunchTemplateVersion.VersionNumber' --output text)
+          new_template_version=$(aws ec2 create-launch-template-version --source-version 1 --launch-template-name "myLaunchTemplate" --launch-template-data "{\"ImageId\":\"$ami_id\"}" --version-description "v2" --query 'LaunchTemplateVersion.VersionNumber' --output text)
           echo "New Launch Template Version: $new_template_version"    
         
       - name: Update autoscaling group
-        run: aws autoscaling update-auto-scaling-group --auto-scaling-group-name $AUTO_SCALING_GROUP_NAME --launch-template "{\"LaunchTemplateName\":\"$TEMPLATE_NAME\", \"Version\":\"$new_template_version\"}"
+        run: aws autoscaling update-auto-scaling-group --auto-scaling-group-name "autoScalingGroup" --launch-template "{\"LaunchTemplateName\":"myLaunchTemplate", \"Version\":\"$new_template_version\"}"
 
       - name: Instance refresh
         run: |
-          instance_refresh_id=$(aws autoscaling start-instance-refresh --auto-scaling-group-name $AUTO_SCALING_GROUP_NAME --strategy "Rolling" --query 'InstanceRefreshId' --output text)
+          instance_refresh_id=$(aws autoscaling start-instance-refresh --auto-scaling-group-name "autoScalingGroup" --strategy "Rolling" --query 'InstanceRefreshId' --output text)
           echo "Instance Refresh started. ID: $instance_refresh_id"
 
       
