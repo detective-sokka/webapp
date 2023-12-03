@@ -1,5 +1,8 @@
 .DS_STORE
 package-lock.json
+manifest.json
+project.zip
+template-data.json
 # Logs
 logs
 log.txt

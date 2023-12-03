@@ -59,6 +59,8 @@ source "amazon-ebs" "my-ami" {
     volume_size           = 8
     volume_type           = "gp2"
   }
+
+  
 }
 
 build {
@@ -90,4 +92,8 @@ build {
       "instance_setup.sh"
     ]
   }
+  post-processor "manifest" {
+        output = "manifest.json"
+        strip_path = true
+    }
 }
