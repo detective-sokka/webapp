@@ -4,19 +4,14 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   workflow_dispatch:
   
-  #pull_request:
-  #  branches: [ "main" ]
-  #  types: 
-  #    - closed
-
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+    types: 
+      - closed
 
 jobs:
   if_merged:
-    #if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -60,18 +55,6 @@ jobs:
 
       - name: Fetch old launch template data and save it
         run: aws ec2 describe-launch-template-versions --launch-template-name "myLaunchTemplate" --versions 1 > template-data.json
-
-      #- name: Setup JSON data
-      #  run: |
-      #    sed -i "s/ami-[a-zA-Z0-9]*/${ami_id}/g" template-data.json          
-      #    cat template-data.json
-      #    jq '.LaunchTemplateData' template-data.json.json > extracted_data.json
-      #    jq 'walk(if type == "number" or type == "boolean" then tostring else . end)' extracted_data.json > new_extracted_data.json
-      #    iam_instance_profile_name=$(jq -r '.IamInstanceProfile.Name' new_extracted_data.json)   
-      #    image_id=$(jq -r '.ImageId' new_extracted_data.json)                           
-      #    user_data=$(jq -r '.UserData' new_extracted_data.json)    
-      #    security_group_ids=$(jq -r '.SecurityGroupIds[]' new_extracted_data.json | jq -s -c .)
-
 
       - name: Create launch template
         run: |          
