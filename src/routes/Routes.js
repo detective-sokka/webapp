@@ -30,7 +30,7 @@ export const logger = winston.createLogger({
 
 
 // GET /v1/assignments - Get List of All Assignments
-router.get("/v1/assignments", (req, res) => {
+router.get("/v2/assignments", (req, res) => {
 
   client.increment('GET_ALL');
 
@@ -93,7 +93,7 @@ router.get("/v1/assignments", (req, res) => {
 });
 
 // POST /v1/assignments - Create Assignment
-router.post("/v1/assignments", jsonParser, async (req, res) => {
+router.post("/v2/assignments", jsonParser, async (req, res) => {
 
   client.increment('POST_REQ');
   
@@ -167,7 +167,7 @@ router.post("/v1/assignments", jsonParser, async (req, res) => {
   }
 });
 
-router.get("/v1/assignments/:id", async (req, res) => {
+router.get("/v2/assignments/:id", async (req, res) => {
   
   client.increment('GET_ID');
 
@@ -248,7 +248,7 @@ router.get("/v1/assignments/:id", async (req, res) => {
     });
 });
 
-router.delete("/v1/assignments/:id", async (req, res) => {
+router.delete("/v2/assignments/:id", async (req, res) => {
   
   client.increment('DELETE_ID');
 
@@ -331,7 +331,7 @@ router.delete("/v1/assignments/:id", async (req, res) => {
     });
 });
 
-router.put("/v1/assignments/:id", jsonParser, async (req, res) => {
+router.put("/v2/assignments/:id", jsonParser, async (req, res) => {
   
   const assignmentId = req.params.id;
 
@@ -414,7 +414,7 @@ router.put("/v1/assignments/:id", jsonParser, async (req, res) => {
     });
 });
 
-router.post("/v1/assignments/:id/submission", jsonParser, async (req, res) => {
+router.post("/v2/assignments/:id/submission", jsonParser, async (req, res) => {
 
   const assignmentId = req.params.id;
 
