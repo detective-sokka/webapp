@@ -4,6 +4,10 @@
 
 This is the back-end of the student assignment submission portal web application that is hosted on an AWS EC2 instance. 
 
+Here are the links to the Pulumi code that deploys the infrastructure and the Lambda function:
+- Pulumi infrastructure - https://github.com/detective-sokka/iac-pulumi
+- Lambda function - https://github.com/detective-sokka/serverless
+
 ### Technologies used
 1. **Node.js**(javascript) - Used to run the backend of the application
 2. **Github actions** using YAML - Running unit tests and integrations tests to ensure Continuos Testing and Continuous Integration
